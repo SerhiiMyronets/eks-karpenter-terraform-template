@@ -13,10 +13,6 @@ variable "oidc_provider_url" {
   description = "URL of the OIDC provider (without https://)"
 }
 
-variable "ssm_parameter_arns" {
-  description = "ARN in Parameter Store"
-  type        = list(string)
-}
 variable "aws_region" {
   description = "AWS region"
   type        = string
