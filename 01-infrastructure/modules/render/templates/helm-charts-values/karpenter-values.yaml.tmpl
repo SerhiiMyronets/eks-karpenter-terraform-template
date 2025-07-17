@@ -1,0 +1,8 @@
+serviceAccount:
+  create: true
+  name: karpenter
+  annotations:
+    eks.amazonaws.com/role-arn: ${karpenter-controller-role}
+settings:
+  clusterName: ${cluster_name}
+  interruptionQueue: ${interruption_queue_url}
