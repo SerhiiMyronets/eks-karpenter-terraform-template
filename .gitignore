@@ -5,3 +5,4 @@
 *.tfstate.backup
 *.lock.hcl
 *.tfstate.lock.info
+outputs.json
