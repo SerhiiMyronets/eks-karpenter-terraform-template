@@ -1,6 +1,5 @@
 .idea
 **/.terraform/
-*.crt
 *.tfstate
 *.tfstate.backup
 *.lock.hcl
