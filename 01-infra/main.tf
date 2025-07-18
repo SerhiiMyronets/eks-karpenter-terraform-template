@@ -31,13 +31,3 @@ module "iam" {
   oidc_provider_url      = module.eks.oidc_provider_url
   interruption_queue_arn = module.sqs.interruption_queue_arn
 }
-
-module "render" {
-  source = "./modules/05-render_output"
-
-  cluster_name              = var.cluster_name
-  karpenter-controller-role = module.iam.karpenter-controller-role-arn
-  interruption_queue_name   = module.sqs.interruption_queue_name
-  karpenter_node_role_arn   = module.iam.karpenter_node_role_arn
-  eks_node_role_arn         = module.eks.eks_node_role_arn
-}
