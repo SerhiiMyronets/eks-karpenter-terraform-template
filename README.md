@@ -61,10 +61,16 @@ The following tools must be available in your environment:
 
 ### 1. Provision Infrastructure
 
+#### terraform.tfvars
+
+You don't need to create a `terraform.tfvars` file unless you want to override the default configuration. All variables have safe and low-cost defaults, but for customization (such as region, AZs, or instance types), an example file `terraform.tfvars.example` is provided.
+
+💡 The defaults are optimized for learning, demos, and minimal AWS costs.
+
+
 This step provisions all core AWS resources: VPC, subnets, Internet Gateway, IAM roles, SQS queue for Spot interruption handling, and the EKS cluster itself.
 
 ```bash
-cd 01-infra
 terraform init
 terraform apply
 ```
