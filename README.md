@@ -39,8 +39,8 @@ The goal is to keep the setup simple, reproducible, and aligned with how Karpent
 │
 ├── 03-install              # Final rendered output
 │   ├── static-manifests/   # Sample NodePool and test deployment
-│   ├── helm-values/        # Helm values used for installation
-│   └── rendered-manifests/ # Core manifests (e.g., aws-auth, EC2NodeClass)
+│   ├── helm-values/        # Rendered Helm values used for installation
+│   └── rendered-manifests/ # Rendered core manifests (e.g., aws-auth, EC2NodeClass)
 ```
 
 ---
