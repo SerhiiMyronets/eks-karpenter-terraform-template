@@ -50,8 +50,8 @@ resource "aws_iam_role" "karpenter-controller-role" {
 }
 
 resource "aws_iam_role_policy" "controller-policy" {
-  name   = "${var.cluster_name}-karpenter-controller-policy"
-  role   = aws_iam_role.karpenter-controller-role.id
+  name = "${var.cluster_name}-karpenter-controller-policy"
+  role = aws_iam_role.karpenter-controller-role.id
   policy = templatefile("${path.module}/iam_policies/karpenter_controller-policy.json.tmpl", {
     AWS_ACCOUNT_ID         = data.aws_caller_identity.current.account_id
     AWS_PARTITION          = data.aws_partition.current.partition

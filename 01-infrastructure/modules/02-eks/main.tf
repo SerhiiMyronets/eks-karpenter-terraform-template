@@ -24,7 +24,8 @@ resource "aws_eks_cluster" "main" {
   role_arn = aws_iam_role.cluster.arn
 
   vpc_config {
-    subnet_ids = var.subnet_ids
+    subnet_ids         = var.subnet_ids
+    security_group_ids = [aws_security_group.eks_cluster.id]
   }
 
   depends_on = [
@@ -90,17 +91,33 @@ data "tls_certificate" "eks" {
   url = aws_eks_cluster.main.identity[0].oidc[0].issuer
 }
 
-data "aws_eks_cluster" "this" {
-  name = aws_eks_cluster.main.name
+resource "aws_security_group" "eks_cluster" {
+  name        = "${var.cluster_name}-eks-cluster-sg"
+  description = "EKS Cluster security group"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    "Name"                   = "${var.cluster_name}-cluster-sg"
+    "karpenter.sh/discovery" = var.cluster_name
+  }
 }
 
-resource "aws_ec2_tag" "karpenter_discovery_tag" {
-  for_each = {
-    "karpenter.sh/discovery" = var.cluster_name
-    "Name"                   = "${var.cluster_name}-cluster-sg"
-  }
+resource "aws_security_group_rule" "self_ingress" {
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  source_security_group_id = aws_security_group.eks_cluster.id
+  security_group_id        = aws_security_group.eks_cluster.id
+  description              = "Allow all traffic within the same SG"
+}
 
-  resource_id = data.aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
-  key         = each.key
-  value       = each.value
+resource "aws_security_group_rule" "eks_all_egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.eks_cluster.id
+  description       = "Allow all outbound traffic"
 }

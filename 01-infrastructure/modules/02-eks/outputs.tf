@@ -17,3 +17,7 @@ output "oidc_provider_url" {
   description = "OIDC Provider URL"
   value       = replace(aws_iam_openid_connect_provider.eks.url, "https://", "")
 }
+
+output "eks_node_role_arn" {
+  value = aws_iam_role.node.arn
+}

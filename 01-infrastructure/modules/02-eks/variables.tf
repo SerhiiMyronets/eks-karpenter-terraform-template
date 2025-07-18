@@ -8,6 +8,10 @@ variable "cluster_version" {
   type        = string
 }
 
+variable "vpc_id" {
+  type = string
+}
+
 variable "subnet_ids" {
   description = "Subnet IDs"
   type        = list(string)
@@ -26,6 +30,3 @@ variable "node_groups" {
   }))
 }
 
-output "eks_node_role_arn" {
-  value = aws_iam_role.node.arn
-}

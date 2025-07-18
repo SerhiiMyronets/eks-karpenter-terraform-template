@@ -6,7 +6,7 @@ locals {
       karpenter-controller-role = var.karpenter-controller-role
       cluster_name              = var.cluster_name
       cluster_endpoint          = var.cluster_endpoint
-      interruption_queue_name    = var.interruption_queue_name
+      interruption_queue_name   = var.interruption_queue_name
     })
   }
 }
