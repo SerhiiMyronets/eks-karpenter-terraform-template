@@ -139,8 +139,6 @@ You can experiment by increasing the number of replicas in the deployment. Once 
 
 ---
 
-
-
 ## ✦ Testing the Interruption Queue
 
 To verify that the Karpenter controller is correctly receiving Spot interruption warnings via SQS, you can manually send a test message using the AWS CLI.
@@ -206,6 +204,3 @@ terraform destroy
 ## 📄 License
 
 MIT © [Serhii Myronets](https://github.com/your-github-profile)
-
-
-````
