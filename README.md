@@ -22,25 +22,25 @@ The goal is to keep the setup simple, reproducible, and aligned with how Karpent
 
 ```
 .
-├── 01-infra                # Terraform configuration for infrastructure ready for Karpenter
+├── 01-infra                # Terraform config for EKS and dependencies
 │   ├── main.tf
 │   ├── providers.tf
 │   ├── variables.tf
 │   ├── outputs.tf
-│   └── modules/            # Custom Terraform modules for infrastructure components
-│       ├── 01-vpc/         # VPC with subnets, routing, and Internet Gateway
-│       ├── 02-eks/         # EKS cluster definition and managed node groups
-│       ├── 03-sqs/         # SQS queue used for Karpenter interruption handling
-│       └── 04-iam/         # IAM roles and policies for Karpenter controller and nodes (with IRSA)
+│   └── modules/            # Custom modules used in infrastructure setup
+│       ├── 01-vpc/         # VPC, subnets, and routing
+│       ├── 02-eks/         # EKS cluster and node group
+│       ├── 03-sqs/         # SQS queue for interruption handling
+│       └── 04-iam/         # IAM roles and policies for Karpenter
 │
-├── 02-render               # Template rendering using gomplate and Terraform outputs
-│   ├── render.sh           # Script to generate manifests and Helm values
-│   └── templates/          # gomplate templates for Karpenter manifests and values
+├── 02-render               # gomplate rendering logic
+│   ├── render.sh           # Script to generate manifests and values
+│   └── templates/          # Template files for gomplate
 │
-├── 03-install              # Output directory for rendered Kubernetes manifests and Helm values
-│   ├── static-manifests/   # Example NodePool with Spot configuration and a test workload deployment
-│   ├── helm-values/        # Rendered Helm values for Karpenter installation
-│   └── rendered-manifests/ # Rendered Kubernetes manifests
+├── 03-install              # Final rendered output
+│   ├── static-manifests/   # Sample NodePool and test deployment
+│   ├── helm-values/        # Helm values used for installation
+│   └── rendered-manifests/ # Core manifests (e.g., aws-auth, EC2NodeClass)
 ```
 
 ---
@@ -136,7 +136,6 @@ kubectl apply -f ./static-manifests/test-deployment.yaml
 This creates a simple test workload to trigger provisioning and verify that Karpenter is functioning as expected.
 
 You can experiment by increasing the number of replicas in the deployment. Once the scheduled pods no longer fit on existing nodes, Karpenter will automatically provision new ones according to the configuration in the active `NodePool`.
-
 
 ---
 
