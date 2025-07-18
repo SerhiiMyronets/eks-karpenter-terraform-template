@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-karpenter-test
+  labels:
+    app: nginx-karpenter-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-karpenter-test
+  template:
+    metadata:
+      labels:
+        app: nginx-karpenter-test
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        ports:
+        - containerPort: 80

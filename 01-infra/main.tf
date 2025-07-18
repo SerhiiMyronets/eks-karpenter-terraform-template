@@ -11,11 +11,11 @@ module "vpc" {
 module "eks" {
   source = "./modules/02-eks"
 
-  cluster_name    = var.cluster_name
-  cluster_version = var.cluster_version
-  node_groups     = var.node_groups_config
-  subnet_ids      = module.vpc.private_subnet_ids
-  vpc_id          = module.vpc.vpc_id
+  cluster_name       = var.cluster_name
+  cluster_version    = var.cluster_version
+  node_groups_config = var.node_groups_config
+  subnet_ids         = module.vpc.private_subnet_ids
+  vpc_id             = module.vpc.vpc_id
 }
 
 module "sqs" {
@@ -33,13 +33,11 @@ module "iam" {
 }
 
 module "render" {
-  source = "./modules/05-render"
+  source = "./modules/05-render_output"
 
   cluster_name              = var.cluster_name
-  karpenter_nodepool_config = var.karpenter_nodepool_config
-  karpenter-controller-role = module.iam.karpenter-controller-role
+  karpenter-controller-role = module.iam.karpenter-controller-role-arn
   interruption_queue_name   = module.sqs.interruption_queue_name
   karpenter_node_role_arn   = module.iam.karpenter_node_role_arn
   eks_node_role_arn         = module.eks.eks_node_role_arn
-  cluster_endpoint          = module.eks.cluster_endpoint
 }

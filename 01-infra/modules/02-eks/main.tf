@@ -60,7 +60,7 @@ resource "aws_iam_role_policy_attachment" "node_policy" {
 }
 
 resource "aws_eks_node_group" "main" {
-  for_each = var.node_groups
+  for_each = var.node_groups_config
 
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = each.key
