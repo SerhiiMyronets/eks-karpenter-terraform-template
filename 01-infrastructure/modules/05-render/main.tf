@@ -42,7 +42,7 @@ resource "local_file" "rendered_values" {
   for_each = local.values
 
   content  = each.value
-  filename = "${path.module}/../../../02-helm-charts/values/${each.key}"
+  filename = "${path.module}/../../../02-helm-chart/values/${each.key}"
 }
 
 resource "local_file" "rendered_manifests" {
