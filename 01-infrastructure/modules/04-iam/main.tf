@@ -63,11 +63,3 @@ resource "aws_iam_role_policy" "controller-policy" {
 
 data "aws_caller_identity" "current" {}
 data "aws_partition" "current" {}
-
-#
-
-resource "aws_iam_service_linked_role" "spot" {
-  aws_service_name = "spot.amazonaws.com"
-
-  description = "Service-linked role for EC2 Spot Instances"
-}

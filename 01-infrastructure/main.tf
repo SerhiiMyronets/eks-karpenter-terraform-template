@@ -22,8 +22,8 @@ module "sqs" {
   cluster_name           = var.cluster_name
 }
 
-module "karpenter" {
-  source       = "./modules/04-karpenter"
+module "iam" {
+  source       = "./modules/04-iam"
   oidc_provider_arn      = module.eks.oidc_provider_arn
   oidc_provider_url      = module.eks.oidc_provider_url
   interruption_queue_arn = module.sqs.interruption_queue_arn
@@ -34,10 +34,10 @@ module "karpenter" {
 module "render" {
   source = "./modules/05-render"
 
-  karpenter-controller-role = module.karpenter.karpenter-controller-role
-  interruption_queue_url    = module.sqs.interruption_queue_url
+  karpenter-controller-role = module.iam.karpenter-controller-role
+  interruption_queue_name    = module.sqs.interruption_queue_name
   karpenter_nodepool_config = var.karpenter_nodepool_config
-  karpenter_node_role_arn   = module.karpenter.karpenter_node_role_arn
+  karpenter_node_role_arn   = module.iam.karpenter_node_role_arn
   eks_node_role_arn         = module.eks.eks_node_role_arn
   cluster_endpoint          = module.eks.cluster_endpoint
   cluster_name              = var.cluster_name

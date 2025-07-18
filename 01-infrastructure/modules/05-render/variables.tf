@@ -1,7 +1,7 @@
 variable "cluster_name" {}
 variable "karpenter-controller-role" {}
 variable "cluster_endpoint" {}
-variable "interruption_queue_url" {}
+variable "interruption_queue_name" {}
 variable "karpenter_node_role_arn" {}
 variable "eks_node_role_arn" {}
 variable "karpenter_nodepool_config" {
