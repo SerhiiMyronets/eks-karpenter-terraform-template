@@ -19,33 +19,27 @@ module "eks" {
 
 module "karpenter" {
   source       = "./modules/karpenter"
-  vpc_id       = module.vpc.vpc_id
-  cluster_name = var.cluster_name
-}
-
-module "irsa" {
-  source                 = "./modules/irsa"
-  cluster_name           = var.cluster_name
-  aws_region             = var.region
   oidc_provider_arn      = module.eks.oidc_provider_arn
   oidc_provider_url      = module.eks.oidc_provider_url
-  interruption_queue_arn = module.karpenter.interruption_queue_arn
+  interruption_queue_arn = module.sqs.interruption_queue_arn
+  cluster_name = var.cluster_name
+  aws_region = var.region
+}
+
+module "sqs" {
+  source                 = "./modules/sqs"
+  cluster_name           = var.cluster_name
 }
 
 module "render" {
   source = "./modules/render"
 
-  ebs_irsa_arn              = module.irsa.ebs_csi_role_arn
-  external_secrets_irsa_arn = module.irsa.external-secrets_role_arn
-  alb_controller_irsa_arn   = module.irsa.alb-controller_role_arn
-  external_dns_irsa_arn     = module.irsa.external_dns_role_arn
-  karpenter-controller-role = module.irsa.karpenter-controller-role
-  interruption_queue_url    = module.karpenter.interruption_queue_url
+  karpenter-controller-role = module.karpenter.karpenter-controller-role
+  interruption_queue_url    = module.sqs.interruption_queue_url
   karpenter_nodepool_config = var.karpenter_nodepool_config
   karpenter_node_role_arn   = module.karpenter.karpenter_node_role_arn
   eks_node_role_arn         = module.eks.eks_node_role_arn
   cluster_endpoint          = module.eks.cluster_endpoint
   cluster_name              = var.cluster_name
   vpc_id                    = module.vpc.vpc_id
-  domain_name               = var.domain_name
 }
