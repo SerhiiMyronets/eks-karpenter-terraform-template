@@ -1,4 +1,4 @@
-# Kerpenter node role
+# Karpenter node role
 
 resource "aws_iam_role" "karpenter-node-role" {
   name = "${var.cluster_name}-karpenter-node-role"
