@@ -38,7 +38,7 @@ The goal is to keep the setup simple, reproducible, and aligned with how Karpent
 │   └── templates/          # Template files for gomplate
 │
 ├── 03-install              # Final rendered output
-│   ├── static-manifests/   # Sample NodePool and test deployment
+│   ├── static-manifests/   # Sample NodePool with spot ec2 and test deployment
 │   ├── helm-values/        # Rendered Helm values used for installation
 │   └── rendered-manifests/ # Rendered core manifests (e.g., aws-auth, EC2NodeClass)
 ```
