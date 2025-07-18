@@ -60,7 +60,7 @@ variable "node_groups_config" {
       scaling_config = {
         desired_size = 2
         max_size     = 2
-        min_size     = 1
+        min_size     = 2
       }
     }
   }
