@@ -5,5 +5,5 @@
 *.lock.hcl
 *.tfstate.lock.info
 outputs.json
-03-install/rendered-manifests
-03-install/helm-values
+03-install/rendered-manifests/*
+03-install/helm-values/*
