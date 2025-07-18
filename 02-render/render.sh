@@ -5,7 +5,12 @@ TEMPLATE_DIR="./templates"
 OUTPUT_DIR="../03-install"
 OUTPUTS_FILE="../01-infra/outputs.json"
 
-echo "🛠️ Rendering templates to $OUTPUT_DIR..."
+echo "Exporting Terraform outputs from 01-infra..."
+pushd ../01-infra > /dev/null
+terraform output -json > outputs.json
+popd > /dev/null
+
+echo "Rendering templates to $OUTPUT_DIR..."
 mkdir -p "$OUTPUT_DIR/rendered-manifests"
 mkdir -p "$OUTPUT_DIR/helm-values"
 
@@ -23,7 +28,7 @@ for template in "$TEMPLATE_DIR"/*.gotmpl; do
     --file "$template" \
     --out "$outpath"
 
-  echo "✅ Rendered $outpath"
+  echo "Rendered $outpath"
 done
 
-echo "🎉 All templates rendered successfully!"
+echo "All templates rendered successfully!"

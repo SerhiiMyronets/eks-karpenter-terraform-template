@@ -23,9 +23,6 @@ output "z_aws_connection_command" {
     "",
     "  Connect to your EKS cluster:",
     "  aws eks update-kubeconfig --region ${var.region} --name ${module.eks.cluster_name}",
-    "",
-    "  Export outputs to JSON (for gomplate):",
-    "  terraform output -json > ../02-render/outputs.json",
     ""
   ])
 }

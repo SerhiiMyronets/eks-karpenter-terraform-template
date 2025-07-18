@@ -23,7 +23,7 @@ spec:
           values: ["linux"]
         - key: karpenter.k8s.aws/instance-category
           operator: In
-          values: ["t" , "c"]
+          values: ["t"]
         - key: karpenter.k8s.aws/instance-generation
           operator: In
           values: ["2", "3"]
@@ -31,8 +31,8 @@ spec:
           operator: Gt
           values: ["1"]
   limits:
-    cpu: "4"
-    memory: 8Gi
+    cpu: "8"
+    memory: 16Gi
   disruption:
     consolidateAfter: 1m
     consolidationPolicy: WhenEmptyOrUnderutilized

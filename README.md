@@ -1,83 +1,99 @@
-## Helm Charts Installation
+# EKS + Karpenter Terraform Template
 
-After you create your infrastructure using the Terraform `render` module (step 1), the Helm `values.yaml` files are generated automatically and personalized for your environment. These files are stored in the `02-helm-charts/values` directory.
+Terraform-based template for deploying a production-ready AWS EKS cluster integrated with [Karpenter](https://karpenter.sh) (v1.6.0), using a modular and flexible structure.
 
-To install the required Helm charts:
+This setup is focused on **hybrid node provisioning** with **Spot and On-Demand** capacity, following infrastructure-as-code best practices.
 
-1. **Navigate to the Helm directory:**
+## 📁 Project Structure
 
-   ```bash
-   cd 02-helm-charts
-   ```
-
-2. **Add Helm repositories and update them:**t
-
-   ```bash
-   helm repo add eks https://aws.github.io/eks-charts && \
-   helm repo add aws-ebs-csi-driver https://kubernetes-sigs.github.io/aws-ebs-csi-driver && \
-   helm repo add external-secrets https://charts.external-secrets.io && \
-   helm repo add bitnami https://charts.bitnami.com/bitnami && \
-   helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server && \
-   helm repo update
-   ```
-
-3. **Install the charts:**
-
-### Install AWS Load Balancer Controller
-
-```bash
-helm upgrade --install aws-load-balancer-controller eks/aws-load-balancer-controller \
-  --namespace kube-system \
-  --create-namespace \
-  --version 1.7.1 \
-  --values ./values/aws-load-balancer-controller-values.yaml
+```
+├── 01-infra           # Terraform modules for EKS, IAM, VPC, Karpenter, etc.
+│   ├── modules        # Reusable Terraform modules
+│   ├── main.tf        # Cluster composition
+│   └── outputs.json   # Terraform output exported for rendering
+├── 02-render          # Render stage: gomplate templates for config
+│   ├── templates      # *.gotmpl templates using terraform outputs
+│   └── render.sh      # Script to render templates into 03-install
+├── 03-install         # Rendered Karpenter CRDs and Helm values for installation
+│   ├── manifests      # ConfigMap, EC2NodeClass, etc.
+│   └── values         # Helm values (e.g., karpenter-values.yaml)
+└── README.md          # This file
 ```
 
-### Install AWS EBS CSI Driver
+---
+
+## Prerequisites
+
+Before using this template, ensure the following are installed:
+
+* **Terraform** `>= 1.4`
+* **AWS CLI** configured with sufficient permissions (IAM, EKS, SQS, EC2)
+* **kubectl** and access to apply changes to your cluster
+* **gomplate** for rendering YAML files based on Terraform outputs (`brew install gomplate`)
+
+You must also have a Route53 hosted zone in your AWS account for service discovery.
+
+---
+
+## Setup Instructions
+
+### Step 1: Provision EKS Infrastructure
 
 ```bash
-helm upgrade --install aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver \
-  --namespace kube-system \
-  --version 2.30.0 \
-  --values ./values/aws-ebs-csi-driver-values.yaml
+cd 01-infra
+terraform init
+terraform apply
 ```
 
-### Install External Secrets Operator
+After Terraform finishes, export the outputs to JSON:
 
 ```bash
-helm upgrade --install external-secrets external-secrets/external-secrets \
-  --namespace external-secrets \
-  --create-namespace \
-  --version 0.9.19 \
-  --values ./values/external-secrets-values.yaml
+terraform output -json > ../02-render/outputs.json
 ```
 
-### Install External DNS
+### Step 2: Render Karpenter Manifests
 
 ```bash
-helm upgrade --install external-dns bitnami/external-dns \
-  --namespace external-dns \
-  --create-namespace \
-  --version 8.9.2 \
-  --values ./values/external-dns-values.yaml
+cd ../02-render
+bash render.sh
 ```
 
-### Install Metrics Server
+This will use `gomplate` to render manifests into `../03-install/`.
+
+### Step 3: Apply Manifests and Install Karpenter
 
 ```bash
-helm upgrade --install metrics-server metrics-server/metrics-server \
-  --namespace kube-system \
-  --create-namespace \
-  --version 3.12.1 \
-  --set args="{--kubelet-insecure-tls,--kubelet-preferred-address-types=InternalIP}"
-```
+cd ../03-install
+kubectl apply -f ./manifests
 
-### Install Karpenter
-
-```bash
 helm upgrade --install karpenter oci://public.ecr.aws/karpenter/karpenter \
-  --namespace karpenter \
-  --create-namespace \
-  --version v0.35.0 \
-  --values ./values/karpenter-values.yaml
+  --namespace karpenter --create-namespace \
+  --version 1.6.0 \
+  -f ./values/karpenter-values.yaml
 ```
+
+---
+
+## Why Not GitOps?
+
+This repo intentionally avoids GitOps (e.g. Argo CD, Flux) to retain full manual control over:
+
+* Karpenter provisioning templates
+* Helm values and node class configuration
+* Simple experimentation and prototyping
+
+You can easily extend or adapt this project to GitOps later.
+
+---
+
+## Future Extensions
+
+* Add custom `NodePool` examples (On-Demand, Spot-only, GPU, etc.)
+* Add monitoring (e.g., kube-prometheus-stack)
+* Add ALB controller and TLS certificates
+
+---
+
+## License
+
+MIT © Serhii Myronets
