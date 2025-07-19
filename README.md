@@ -41,6 +41,8 @@ The goal is to keep the setup simple, reproducible, and aligned with how Karpent
 │   ├── static-manifests/   # Sample NodePool with spot ec2 and test deployment
 │   ├── helm-values/        # Rendered Helm values used for installation
 │   └── rendered-manifests/ # Rendered core manifests (e.g., aws-auth, EC2NodeClass)
+├── docs/
+│   └── screenshots/        # Screenshots from k9s and Karpenter controller logs
 ```
 
 ---
@@ -67,10 +69,10 @@ You don't need to create a `terraform.tfvars` file unless you want to override t
 
 💡 The defaults are optimized for learning, demos, and minimal AWS costs.
 
-
 This step provisions all core AWS resources: VPC, subnets, Internet Gateway, IAM roles, SQS queue for Spot interruption handling, and the EKS cluster itself.
 
 ```bash
+cd 01-infra
 terraform init
 terraform apply
 ```
@@ -79,9 +81,7 @@ Once complete, Terraform will produce a set of outputs that will be consumed by 
 
 Among the outputs, you will see a ready-to-run command for configuring your kubeconfig to access the cluster:
 
-```bash
-aws eks update-kubeconfig --region <<region>> --name <<cluster_name>>
-```
+**aws eks update-kubeconfig --region <<region>> --name <\<cluster\_name>>**
 
 This command is generated automatically based on your configuration.
 
@@ -145,6 +145,29 @@ You can experiment by increasing the number of replicas in the deployment. Once 
 
 ---
 
+## ✦ Karpenter in Action
+
+<details>
+<summary>▶️ Expand to view screenshots demonstrating Karpenter in action</summary>
+
+### NodeClaims created by Karpenter (via `k9s`)
+
+This view shows Spot instances created by Karpenter with various types and zones:
+
+![Karpenter NodeClaims](docs/screenshots/karpenter-nodeclaims-k9s.png)
+
+---
+
+### Controller logs showing NodeClaim lifecycle (via `k9s logs`)
+
+This log shows how Karpenter computes, launches, registers and initializes a NodeClaim:
+
+![Karpenter Controller Logs](docs/screenshots/karpenter-controller-logs.png)
+
+</details>
+
+---
+
 ## ✦ Testing the Interruption Queue
 
 To verify that the Karpenter controller is correctly receiving Spot interruption warnings via SQS, you can manually send a test message using the AWS CLI.
@@ -174,11 +197,11 @@ aws sqs send-message \
 
 Use the list below to identify what values you need to provide:
 
-- `<your-queue-url>` — full URL of the Karpenter interruption queue (from Terraform output or AWS Console)
-- `<your-instance-arn>` — ARN of a Spot instance currently running (provisioned by Karpenter)
-- `<your-instance-id>` — ID of the same Spot instance
-- `<your-region>` — your AWS region (e.g. `us-east-1`)
-- `<your-account-id>` — your AWS account ID
+* `<your-queue-url>` — full URL of the Karpenter interruption queue (from Terraform output or AWS Console)
+* `<your-instance-arn>` — ARN of a Spot instance currently running (provisioned by Karpenter)
+* `<your-instance-id>` — ID of the same Spot instance
+* `<your-region>` — your AWS region (e.g. `us-east-1`)
+* `<your-account-id>` — your AWS account ID
 
 When the message is delivered, you should see logs from the Karpenter controller confirming receipt of the simulated interruption event. It will begin cordoning and draining the referenced node, followed by instance termination — mimicking the actual Spot interruption flow. After that, Karpenter will provision a replacement node if needed, based on the active `NodePool` settings.
 
@@ -192,9 +215,9 @@ If any nodes remain (e.g., provisioned via `NodePool`), the corresponding EC2 in
 
 To avoid issues:
 
-- Delete any active `NodePool` objects or scale them down to zero
-- Ensure that all Karpenter-provisioned EC2 instances are terminated
-- Wait for Kubernetes to fully remove the node objects from the cluster
+* Delete any active `NodePool` objects or scale them down to zero
+* Ensure that all Karpenter-provisioned EC2 instances are terminated
+* Wait for Kubernetes to fully remove the node objects from the cluster
 
 Once the cluster is clean, you can safely run:
 
@@ -204,8 +227,6 @@ terraform destroy
 ```
 
 ---
-
-
 
 ## 📄 License
 
