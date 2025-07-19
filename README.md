@@ -197,7 +197,7 @@ aws sqs send-message \
 
 Use the list below to identify what values you need to provide:
 
-* `<your-queue-url>` — full URL of the Karpenter interruption queue (from Terraform output or AWS Console)
+* `<your-queue-url>` — full URL of the Karpenter interruption queue
 * `<your-instance-arn>` — ARN of a Spot instance currently running (provisioned by Karpenter)
 * `<your-instance-id>` — ID of the same Spot instance
 * `<your-region>` — your AWS region (e.g. `us-east-1`)
