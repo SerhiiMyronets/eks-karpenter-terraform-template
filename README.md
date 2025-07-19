@@ -81,7 +81,7 @@ Once complete, Terraform will produce a set of outputs that will be consumed by 
 
 Among the outputs, you will see a ready-to-run command for configuring your kubeconfig to access the cluster:
 
-**aws eks update-kubeconfig --region <<region>> --name <\<cluster\_name>>**
+**aws eks update-kubeconfig --region <\<region\>> --name <\<cluster\_name>>**
 
 This command is generated automatically based on your configuration.
 
